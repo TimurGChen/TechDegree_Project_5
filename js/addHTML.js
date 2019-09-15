@@ -27,15 +27,24 @@ const gallery = document.querySelector('#gallery');
 //modal
 const modalContainer = document.createElement('div');
     modalContainer.setAttribute('class', 'modal-container');
+    modalContainer.style.display = 'none';
+const modal = document.createElement('div');
+    modal.setAttribute('class', 'modal');
 const modalCloseBtn = document.createElement('button');
     modalCloseBtn.innerHTML = '<strong>X</strong>';
     modalCloseBtn.setAttribute('type', 'button');
     modalCloseBtn.setAttribute('id', 'modal-close-btn');
     modalCloseBtn.setAttribute('class', 'modal-close-btn');
+    modalCloseBtn.addEventListener('click', () => {
+        modalContainer.style.display = 'none';
+    });
 const modalInfoContainer = document.createElement('div');
     modalInfoContainer.setAttribute('class', 'modal-info-container');
+
+
 gallery.parentNode.insertBefore(modalContainer, gallery.nextSibling);
-modalContainer.appendChild(modalCloseBtn);
-modalContainer.appendChild(modalInfoContainer);
+modalContainer.appendChild(modal);
+modal.appendChild(modalCloseBtn);
+modal.appendChild(modalInfoContainer);
 
 
