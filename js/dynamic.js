@@ -10,9 +10,12 @@ employeeHTML = data => {
     //generate one employee info card, and append to DOM
     genCard = person => {
         const cardDiv = document.createElement('div');
+            cardDiv.setAttribute('class', 'card');
         const imgDiv = document.createElement('div');
+            imgDiv.setAttribute('class', 'card-img-container');
             imgDiv.innerHTML = `<img class="card-img" src="${person.picture.large}" alt="profile picture">`;
         const infoDiv = document.createElement('div');
+            infoDiv.setAttribute('class', 'card-info-container');
             infoDiv.innerHTML = `
             <h3 id="name" class="card-name cap">${cap(person.name.first)} ${cap(person.name.last)}</h3>
             <p class="card-text">${person.email}</p>
@@ -25,15 +28,22 @@ employeeHTML = data => {
 
         cardDiv.addEventListener('click', () => {
             refreshModal(person);
-            modalContainer.style.display = 'block';
+            modalContainer.style.display = '';
         });
     }
 
     //generate modal
     refreshModal = person => {
+        //parse messay info
         const city = cap(person.location.city);
         const state = /$[a-zA-Z]{2}^/.test(person.location.state) ? person.location.state.toUpperCase : cap(person.location.state);
-        const street = cap(person.location.street).replace(/\s([A-Za-z])/g, ` ${'$1'.toUpperCase()}`);
+        const street = cap(person.location.street).replace(/\s([A-Za-z])/g, (match, p1) => {
+            return ` ${p1.toUpperCase()}`;
+        });
+        const birthday = person.dob.date.replace(/^(\d{4})-(\d{2})-(\d{2}).+$/, (match, p1, p2, p3) => {
+            return `${p2}/${p3}/${p1.replace(/\d{2}(\d{2})/, '$1')}`;
+        });
+
         modalInfoContainer.innerHTML = `
             <img class="modal-img" src="${person.picture.large}" alt="profile picture">
             <h3 id="name" class="modal-name cap">${cap(person.name.first)} ${cap(person.name.last)}</h3>
@@ -42,8 +52,10 @@ employeeHTML = data => {
             <hr>
             <p class="modal-text">${person.phone}</p>
             <p class="modal-text">${street}, ${city}, ${state} ${person.location.postcode}</p>
-            <p class="modal-text">Birthday: ${person.dob.date}</p>
-        `;//fix date & address length & cap issues
+            <p class="modal-text">Birthday: ${birthday}</p>
+        `;
+
+
     }
 
     const employeeList = data.results;
@@ -51,9 +63,26 @@ employeeHTML = data => {
     employeeList.forEach(person => genCard(person));
 } 
 
+updateGallery = () => {
+    const key = searchInput.value.toLowerCase();
+    const nameHeaderList = document.querySelectorAll('#name');
+    nameHeaderList.forEach(nameHeader => {
+        const name = nameHeader.textContent.toLowerCase();
+        if(name.indexOf(key) === -1) {
+            nameHeader.parentElement.parentElement.style.display = 'none';
+        } else {
+            nameHeader.parentElement.parentElement.style.display = '';
+        }
+    })
+}
 
+searchInput.addEventListener('input', updateGallery);
+searchForm.addEventListener('submit', e => {
+    e.preventDefault();
+    updateGallery();
+})
 
-fetch('https://randomuser.me/api/?results=12')
+fetch('https://randomuser.me/api/?results=12&nat=au,ca,gb,ie,nz')
     .then(response => response.json())
     .then(employeeHTML)
     .catch(err => console.log(`Looks like there is a Huuuuuuuge problem: ${err}`));
