@@ -1,13 +1,29 @@
+/**
+ * adds elements and functionality that dynamically changes/hides/shows elements
+ * according to user action
+ */
 
-//generate each employee's card in gallery div
+
+/**
+ * convert the employee data from json to employee info displayed
+ * on the gallery div as "cards". Each card generates a customized
+ * modal with detail info regarding that employee.
+ * @param {json} - data - employee information fetched from server 
+ */
 employeeHTML = data => {
-    //capitalize the string input
+
+    //capitalize a string
     cap = str => {
         let first = str[0].toUpperCase();
         let rest = str.slice(1).toLowerCase();
         return first + rest;
     }
-    //generate one employee info card, and append to DOM
+
+    /**
+     * generate one employee info card, and append to DOM,
+     * each card refreshes and displays the modal on click
+     * @param {object} - information regarding one employee
+     */
     genCard = person => {
         const cardDiv = document.createElement('div');
             cardDiv.setAttribute('class', 'card');
@@ -32,9 +48,12 @@ employeeHTML = data => {
         });
     }
 
-    //generate modal
+    /**
+     * refreshes the modal by extracting more information from 'person' obj
+     * @param {object} person - information regarding one employee
+     */
     refreshModal = person => {
-        //parse messay info
+        //parses messy info
         const city = cap(person.location.city);
         const state = /$[a-zA-Z]{2}^/.test(person.location.state) ? person.location.state.toUpperCase : cap(person.location.state);
         const street = cap(person.location.street).replace(/\s([A-Za-z])/g, (match, p1) => {
@@ -54,15 +73,16 @@ employeeHTML = data => {
             <p class="modal-text">${street}, ${city}, ${state} ${person.location.postcode}</p>
             <p class="modal-text">Birthday: ${birthday}</p>
         `;
-
-
     }
 
     const employeeList = data.results;
-    console.log(employeeList);
     employeeList.forEach(person => genCard(person));
 } 
 
+
+/**
+ * displays employee info cards matched with search input value only
+ */
 updateGallery = () => {
     const key = searchInput.value.toLowerCase();
     const nameHeaderList = document.querySelectorAll('#name');
@@ -76,13 +96,21 @@ updateGallery = () => {
     })
 }
 
+
+/**
+ * adds event listener to the search box to dynamically display matching
+ * employee info card on gallery
+ */
 searchInput.addEventListener('input', updateGallery);
 searchForm.addEventListener('submit', e => {
     e.preventDefault();
     updateGallery();
 })
 
+/**
+ * fetches data of 12 random employees from English-speaking countries
+ */
 fetch('https://randomuser.me/api/?results=12&nat=au,ca,gb,ie,nz')
     .then(response => response.json())
     .then(employeeHTML)
-    .catch(err => console.log(`Looks like there is a Huuuuuuuge problem: ${err}`));
+    .catch(err => console.log(`Looks like there is a humongous problem: ${err}`));
