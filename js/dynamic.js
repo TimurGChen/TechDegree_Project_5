@@ -96,6 +96,19 @@ updateGallery = () => {
     })
 }
 
+/**
+ * checks whether employee has been successfully retrieved from the server
+ * @param {response} - server response to the fetch request, ideally containing 
+ *      employee info
+ * @returns {Promise} - a resolved or rejected promise regarding the fetch request
+ */
+checkStatus = response => {
+    if(response.ok) {
+        return Promise.resolve(response);
+    } else {
+        return Promise.reject(new Error(response.statusText));
+    }
+}
 
 /**
  * adds event listener to the search box to dynamically display matching
@@ -110,7 +123,8 @@ searchForm.addEventListener('submit', e => {
 /**
  * fetches data of 12 random employees from English-speaking countries
  */
-fetch('https://randomuser.me/api/?results=12&nat=au,ca,gb,ie,nz')
+fetch('https://randomuser.me/api/?results=12&nat=au,ca,gb,ie,nz&lego')
+    .then(res => checkStatus(res))
     .then(response => response.json())
     .then(employeeHTML)
     .catch(err => console.log(`Looks like there is a humongous problem: ${err}`));
