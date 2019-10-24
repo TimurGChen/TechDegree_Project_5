@@ -14,7 +14,7 @@ employeeHTML = data => {
 
     //capitalize a string
     cap = str => {
-        let first = str[0].toUpperCase();
+        let first = str.slice(0, 1).toUpperCase();
         let rest = str.slice(1).toLowerCase();
         return first + rest;
     }
